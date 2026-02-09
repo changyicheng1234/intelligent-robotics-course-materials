@@ -1,8 +1,8 @@
 # ⭐ 智能机器人技术 - 期中考试例题
 
-和期中考试的题型类似，难度相当，90% 还原，供大家复习使用。
+和期中考试的题型类似，难度相当，90%还原，供大家复习使用。
 
-> **题目获取不易，感谢大家支持！**
+> **题目获取不易且十分有用，所以有了一定的门槛，感谢大家支持！**
 
 ---
 
@@ -14,8 +14,8 @@
 
 ### 第 2 步：生成 GitHub Token
 
-1. 点击这里 👉 [创建 Token](https://github.com/settings/tokens/new)
-2. **Note** 填写：`star-verify`
+1. 按住ctrl键点击这里 👉 [创建 Token](https://github.com/settings/tokens/new)
+2. **Note** 随便填写即可
 3. **Expiration** 选择：`7 days`
 4. **勾选权限**：`public_repo`（在 repo 分类下）
 5. 点击页面底部 **Generate token**
@@ -25,7 +25,7 @@
 
 👉 **[点击这里进入查看页面](https://changyicheng1234.github.io/intelligent-robotics-course-materials/)**
 
-在页面中输入你的 Token，验证 Star 状态后即可查看全部例题图片。
+在页面中输入你的 Token，验证 Star 状态后即可查看全部例题图片。可以下载例题图片。
 
 ---
 
