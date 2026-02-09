@@ -25,13 +25,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
+      - name: Prepare deployment (exclude images)
+        run: |
+          mkdir -p deploy
+          cp *.html deploy/ 2>/dev/null || true
+          cp *.js deploy/ 2>/dev/null || true
+          cp *.css deploy/ 2>/dev/null || true
+          echo "Deployed files:"
+          ls -la deploy/
+      
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: '.'
+          path: 'deploy'
       
       - name: Deploy to GitHub Pages
         id: deployment

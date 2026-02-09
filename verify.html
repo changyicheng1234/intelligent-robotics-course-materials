@@ -32,16 +32,17 @@
 
         h1 {
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: center;
+            font-size: 1.8em;
         }
 
         .info-box {
             background: #f8f9fa;
             border-left: 4px solid #667eea;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 0 8px 8px 0;
         }
 
         .info-box h3 {
@@ -51,11 +52,16 @@
 
         .info-box ol {
             margin-left: 20px;
-            color: #666;
+            color: #555;
         }
 
         .info-box li {
             margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .info-box a {
+            color: #667eea;
         }
 
         .form-group {
@@ -71,10 +77,11 @@
 
         input[type="text"] {
             width: 100%;
-            padding: 12px;
+            padding: 12px 15px;
             border: 2px solid #e9ecef;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 1em;
+            font-family: monospace;
             transition: border-color 0.3s;
         }
 
@@ -88,9 +95,9 @@
             background: #28a745;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 1em;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 1.05em;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
@@ -101,11 +108,18 @@
             transform: translateY(-2px);
         }
 
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .message {
             padding: 15px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-top: 20px;
             text-align: center;
+            line-height: 1.6;
         }
 
         .message.success {
@@ -120,16 +134,33 @@
             border: 1px solid #f5c6cb;
         }
 
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
         .back-link {
             display: block;
             text-align: center;
             margin-top: 20px;
             color: #667eea;
             text-decoration: none;
+            font-weight: 500;
         }
 
         .back-link:hover {
             text-decoration: underline;
+        }
+
+        .security-note {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            font-size: 0.85em;
+            color: #666;
+            text-align: center;
         }
     </style>
 </head>
@@ -140,25 +171,29 @@
         <div class="info-box">
             <h3>📝 如何获取 GitHub Token：</h3>
             <ol>
-                <li>访问 <a href="https://github.com/settings/tokens" target="_blank">GitHub Token 设置页面</a></li>
-                <li>点击 "Generate new token" → "Generate new token (classic)"</li>
-                <li>填写名称（如：验证 Star 状态）</li>
-                <li>选择过期时间</li>
-                <li>勾选权限：<strong>public_repo</strong></li>
-                <li>点击 "Generate token"</li>
-                <li>复制生成的 token（只显示一次，请妥善保存）</li>
+                <li>访问 <a href="https://github.com/settings/tokens/new" target="_blank">GitHub Token 创建页面</a></li>
+                <li>填写名称（如：<code>star-verify</code>）</li>
+                <li>过期时间可选 7 天或 30 天</li>
+                <li>勾选权限：<strong>public_repo</strong>（在 repo 下）</li>
+                <li>点击 "Generate token" 并复制</li>
             </ol>
         </div>
 
         <form id="verify-form">
             <div class="form-group">
                 <label for="token">GitHub Personal Access Token：</label>
-                <input type="text" id="token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required>
+                <input type="text" id="token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required autocomplete="off">
             </div>
-            <button type="submit" class="btn">✅ 验证 Star 状态</button>
+            <button type="submit" class="btn" id="submit-btn">✅ 验证 Star 状态</button>
         </form>
 
         <div id="message"></div>
+
+        <div class="security-note">
+            🔒 你的 Token 仅在浏览器本地存储和使用，不会发送到任何第三方服务器。<br>
+            所有请求直接从你的浏览器发送到 GitHub 官方 API。
+        </div>
+
         <a href="index.html" class="back-link">← 返回主页</a>
     </div>
 
@@ -171,40 +206,86 @@
             e.preventDefault();
             const token = document.getElementById('token').value.trim();
             const messageDiv = document.getElementById('message');
+            const submitBtn = document.getElementById('submit-btn');
             
             if (!token) {
                 messageDiv.innerHTML = '<div class="message error">请输入 GitHub Token</div>';
                 return;
             }
 
-            messageDiv.innerHTML = '<div class="message info">正在验证...</div>';
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ 正在验证...';
+            messageDiv.innerHTML = '<div class="message info">正在连接 GitHub API 验证...</div>';
 
             try {
-                // 检查用户是否 star 了仓库
-                const response = await fetch(`https://api.github.com/user/starred/${REPO_FULL_NAME}`, {
+                // 第一步：验证 Token 是否有效
+                const userResponse = await fetch('https://api.github.com/user', {
                     headers: {
                         'Authorization': `token ${token}`,
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
 
-                if (response.status === 204) {
-                    // 204 表示已 star
-                    localStorage.setItem('star_verified', 'true');
-                    localStorage.setItem('star_verified_time', Date.now().toString());
-                    messageDiv.innerHTML = '<div class="message success">✅ 验证成功！您已 Star 该仓库。正在跳转...</div>';
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 1500);
-                } else if (response.status === 404) {
-                    // 404 表示未 star
-                    messageDiv.innerHTML = '<div class="message error">❌ 您尚未 Star 该仓库。请先前往 <a href="https://github.com/' + REPO_FULL_NAME + '" target="_blank">GitHub 仓库</a> 点 Star，然后重试。</div>';
-                } else {
-                    throw new Error('验证失败');
+                if (!userResponse.ok) {
+                    throw new Error('Token 无效或已过期，请检查后重试');
                 }
+
+                const userData = await userResponse.json();
+                const username = userData.login;
+
+                // 第二步：检查用户是否 Star 了仓库
+                const starResponse = await fetch(`https://api.github.com/user/starred/${REPO_FULL_NAME}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (starResponse.status === 204) {
+                    // 已 Star - 保存验证信息
+                    const verifyData = {
+                        token: token,
+                        username: username,
+                        time: Date.now()
+                    };
+                    // 简单编码存储，不是加密，但避免明文
+                    sessionStorage.setItem('gh_verify', btoa(JSON.stringify(verifyData)));
+                    localStorage.setItem('star_verified_time', Date.now().toString());
+
+                    messageDiv.innerHTML = `<div class="message success">✅ 验证成功！欢迎 <strong>@${username}</strong>，正在跳转到例题页面...</div>`;
+                    
+                    setTimeout(() => {
+                        window.location.href = 'protected-images.html';
+                    }, 1500);
+
+                } else if (starResponse.status === 404) {
+                    // 未 Star
+                    messageDiv.innerHTML = `<div class="message error">❌ 用户 <strong>@${username}</strong> 尚未 Star 该仓库。<br><br>请先前往 <a href="https://github.com/${REPO_FULL_NAME}" target="_blank">GitHub 仓库</a> 点击 ⭐ Star，然后重新验证。</div>`;
+                } else {
+                    throw new Error('验证请求失败，请稍后重试');
+                }
+
             } catch (error) {
                 console.error('验证错误:', error);
-                messageDiv.innerHTML = '<div class="message error">❌ 验证失败，请检查 Token 是否正确，或稍后重试。</div>';
+                messageDiv.innerHTML = `<div class="message error">❌ ${error.message}</div>`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ 验证 Star 状态';
+            }
+        });
+
+        // 如果已有有效验证，提供快速入口
+        window.addEventListener('DOMContentLoaded', () => {
+            const verifyData = sessionStorage.getItem('gh_verify');
+            if (verifyData) {
+                try {
+                    const data = JSON.parse(atob(verifyData));
+                    const elapsed = Date.now() - data.time;
+                    if (elapsed < 24 * 60 * 60 * 1000 && data.token) {
+                        const messageDiv = document.getElementById('message');
+                        messageDiv.innerHTML = `<div class="message success">✅ 你已经验证过了（@${data.username}）。<a href="protected-images.html">直接查看例题 →</a></div>`;
+                    }
+                } catch(e) {}
             }
         });
     </script>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能机器人技术 - 期中考试例题（受保护）</title>
+    <title>智能机器人技术 - 期中考试例题</title>
     <style>
         * {
             margin: 0;
@@ -30,98 +30,234 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 40px;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            opacity: 0.9;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* 未验证提示 */
+        .not-verified {
             text-align: center;
+            padding: 60px 40px;
         }
 
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+        .not-verified h2 {
+            color: #dc3545;
+            margin-bottom: 20px;
+            font-size: 1.8em;
         }
 
-        .warning {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px;
-            text-align: center;
+        .not-verified p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1.1em;
         }
 
-        .warning h2 {
-            color: #856404;
-            margin-bottom: 10px;
+        .not-verified .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 14px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.05em;
+            transition: all 0.3s;
         }
 
-        .images-container {
+        .not-verified .btn:hover {
+            background: #5a6fd6;
+            transform: translateY(-2px);
+        }
+
+        /* 图片网格 */
+        .images-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 30px;
         }
 
-        .image-item {
+        .image-card {
             background: #f8f9fa;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .image-item img {
+        .image-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .image-card .image-wrapper {
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e9ecef;
+        }
+
+        .image-card img {
             width: 100%;
             height: auto;
             display: block;
+            cursor: pointer;
         }
 
-        .image-item .loading {
-            padding: 40px;
-            text-align: center;
-            color: #666;
+        .image-card img:hover {
+            opacity: 0.95;
         }
 
-        .image-item .error {
-            padding: 40px;
-            text-align: center;
+        .image-card .status {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .image-card .status.loading {
+            color: #667eea;
+        }
+
+        .image-card .status.error {
             color: #dc3545;
         }
 
-        .image-item .caption {
+        .spinner {
+            border: 3px solid #e9ecef;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .image-card .caption {
             padding: 15px;
             text-align: center;
             color: #333;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 1.05em;
+            border-top: 1px solid #e9ecef;
         }
 
-        .back-btn {
-            display: block;
-            text-align: center;
-            margin: 20px;
-            padding: 12px 24px;
-            background: #667eea;
+        /* 全屏预览 */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .lightbox .close-hint {
+            position: absolute;
+            top: 20px;
+            right: 30px;
             color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            display: inline-block;
+            font-size: 1.2em;
+            opacity: 0.7;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 0.85em;
+            border-top: 1px solid #f0f0f0;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>⭐ 智能机器人技术</h1>
-            <p>期中考试例题分享</p>
+            <div class="header-left">
+                <h1>⭐ 智能机器人技术</h1>
+                <p>期中考试例题分享</p>
+            </div>
+            <div class="header-right" id="header-right" style="display: none;">
+                <span class="user-info" id="user-info"></span>
+                <button class="logout-btn" onclick="handleLogout()">退出登录</button>
+            </div>
         </div>
 
-        <div class="warning">
-            <h2>⚠️ 访问保护</h2>
-            <p>本页面需要验证后才能查看图片。如果您直接访问此页面，图片将无法加载。</p>
-            <a href="index.html" class="back-btn">← 返回验证页面</a>
-        </div>
+        <div id="content"></div>
 
-        <div class="images-container" id="images-container">
-            <!-- 图片将通过 JavaScript 动态加载 -->
+        <div class="footer">
+            Powered by GitHub API | 图片通过 GitHub API 安全加载
         </div>
+    </div>
+
+    <!-- 全屏预览 -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <span class="close-hint">点击任意处关闭</span>
+        <img id="lightbox-img" src="" alt="预览">
     </div>
 
     <script src="image-loader.js"></script>
@@ -134,58 +270,92 @@
             { name: '例题4.png', caption: '例题 4' }
         ];
 
-        async function loadImages() {
-            const container = document.getElementById('images-container');
-            
+        function init() {
+            const contentDiv = document.getElementById('content');
+            const headerRight = document.getElementById('header-right');
+
             if (!imageLoader.isVerified()) {
-                container.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                        <h2 style="color: #dc3545; margin-bottom: 20px;">❌ 未通过验证</h2>
-                        <p style="color: #666; margin-bottom: 20px;">请先通过验证页面验证您的 Star 状态</p>
-                        <a href="index.html" class="back-btn">前往验证页面</a>
+                // 未验证
+                contentDiv.innerHTML = `
+                    <div class="not-verified">
+                        <h2>🔒 需要验证</h2>
+                        <p>请先通过 GitHub Star 验证才能查看例题图片</p>
+                        <a href="verify.html" class="btn">🔐 前往验证</a>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = images.map(img => `
-                <div class="image-item">
-                    <div class="loading" id="loading-${img.name}">正在加载...</div>
-                    <img id="img-${img.name}" style="display: none;" alt="${img.caption}">
-                    <div class="error" id="error-${img.name}" style="display: none;">加载失败</div>
-                    <div class="caption">${img.caption}</div>
-                </div>
-            `).join('');
+            // 已验证 - 显示用户信息
+            headerRight.style.display = 'flex';
+            document.getElementById('user-info').textContent = `👤 ${imageLoader.getUsername()}`;
 
-            // 加载每张图片
-            for (const img of images) {
-                try {
-                    const imageUrl = await imageLoader.loadImage(img.name);
-                    const imgElement = document.getElementById(`img-${img.name}`);
-                    const loadingElement = document.getElementById(`loading-${img.name}`);
-                    
-                    imgElement.src = imageUrl;
-                    imgElement.style.display = 'block';
-                    loadingElement.style.display = 'none';
-                } catch (error) {
-                    console.error(`加载 ${img.name} 失败:`, error);
-                    const loadingElement = document.getElementById(`loading-${img.name}`);
-                    const errorElement = document.getElementById(`error-${img.name}`);
-                    loadingElement.style.display = 'none';
-                    errorElement.style.display = 'block';
-                }
+            // 创建图片网格
+            contentDiv.innerHTML = `<div class="images-grid">${
+                images.map(img => `
+                    <div class="image-card" id="card-${img.name}">
+                        <div class="image-wrapper">
+                            <div class="status loading" id="status-${img.name}">
+                                <div class="spinner"></div>
+                                <span>正在从 GitHub 加载...</span>
+                            </div>
+                            <img id="img-${img.name}" style="display:none;" alt="${img.caption}" 
+                                 onclick="openLightbox(this.src)">
+                        </div>
+                        <div class="caption">${img.caption}</div>
+                    </div>
+                `).join('')
+            }</div>`;
+
+            // 逐个加载图片
+            loadAllImages();
+        }
+
+        async function loadAllImages() {
+            const loadPromises = images.map(img => loadSingleImage(img));
+            await Promise.allSettled(loadPromises);
+        }
+
+        async function loadSingleImage(img) {
+            const statusEl = document.getElementById(`status-${img.name}`);
+            const imgEl = document.getElementById(`img-${img.name}`);
+
+            try {
+                const dataUrl = await imageLoader.loadImage(img.name);
+                imgEl.src = dataUrl;
+                imgEl.style.display = 'block';
+                statusEl.style.display = 'none';
+            } catch (error) {
+                console.error(`加载 ${img.name} 失败:`, error);
+                statusEl.className = 'status error';
+                statusEl.innerHTML = `
+                    <span style="font-size: 2em;">❌</span>
+                    <span>${error.message}</span>
+                `;
             }
         }
 
-        // 页面加载时检查并加载图片
-        window.addEventListener('DOMContentLoaded', loadImages);
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').classList.add('active');
+        }
 
-        // 监听存储变化，如果验证状态改变，重新加载
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'star_verified') {
-                loadImages();
-            }
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        function handleLogout() {
+            imageLoader.logout();
+            window.location.href = 'index.html';
+        }
+
+        // ESC 关闭预览
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
         });
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
