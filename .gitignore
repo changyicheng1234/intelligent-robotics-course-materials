@@ -12,3 +12,9 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# 忽略原始图片文件（只提交加密后的 .dat 文件）
+例题*.png
+
+# 忽略加密脚本（不需要部署）
+encrypt-images.ps1
