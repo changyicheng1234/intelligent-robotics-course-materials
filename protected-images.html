@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能机器人技术 - 期中考试例题（受保护）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .warning h2 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .images-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .image-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-item .loading {
+            padding: 40px;
+            text-align: center;
+            color: #666;
+        }
+
+        .image-item .error {
+            padding: 40px;
+            text-align: center;
+            color: #dc3545;
+        }
+
+        .image-item .caption {
+            padding: 15px;
+            text-align: center;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin: 20px;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⭐ 智能机器人技术</h1>
+            <p>期中考试例题分享</p>
+        </div>
+
+        <div class="warning">
+            <h2>⚠️ 访问保护</h2>
+            <p>本页面需要验证后才能查看图片。如果您直接访问此页面，图片将无法加载。</p>
+            <a href="index.html" class="back-btn">← 返回验证页面</a>
+        </div>
+
+        <div class="images-container" id="images-container">
+            <!-- 图片将通过 JavaScript 动态加载 -->
+        </div>
+    </div>
+
+    <script src="image-loader.js"></script>
+    <script>
+        const imageLoader = new ImageLoader();
+        const images = [
+            { name: '屏幕截图 2026-02-09 173334.png', caption: '例题 1' },
+            { name: '屏幕截图 2026-02-09 173952.png', caption: '例题 2' },
+            { name: '屏幕截图 2026-02-09 174041.png', caption: '例题 3' },
+            { name: '屏幕截图 2026-02-09 174109.png', caption: '例题 4' }
+        ];
+
+        async function loadImages() {
+            const container = document.getElementById('images-container');
+            
+            if (!imageLoader.isVerified()) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <h2 style="color: #dc3545; margin-bottom: 20px;">❌ 未通过验证</h2>
+                        <p style="color: #666; margin-bottom: 20px;">请先通过验证页面验证您的 Star 状态</p>
+                        <a href="index.html" class="back-btn">前往验证页面</a>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = images.map(img => `
+                <div class="image-item">
+                    <div class="loading" id="loading-${img.name}">正在加载...</div>
+                    <img id="img-${img.name}" style="display: none;" alt="${img.caption}">
+                    <div class="error" id="error-${img.name}" style="display: none;">加载失败</div>
+                    <div class="caption">${img.caption}</div>
+                </div>
+            `).join('');
+
+            // 加载每张图片
+            for (const img of images) {
+                try {
+                    const imageUrl = await imageLoader.loadImage(img.name);
+                    const imgElement = document.getElementById(`img-${img.name}`);
+                    const loadingElement = document.getElementById(`loading-${img.name}`);
+                    
+                    imgElement.src = imageUrl;
+                    imgElement.style.display = 'block';
+                    loadingElement.style.display = 'none';
+                } catch (error) {
+                    console.error(`加载 ${img.name} 失败:`, error);
+                    const loadingElement = document.getElementById(`loading-${img.name}`);
+                    const errorElement = document.getElementById(`error-${img.name}`);
+                    loadingElement.style.display = 'none';
+                    errorElement.style.display = 'block';
+                }
+            }
+        }
+
+        // 页面加载时检查并加载图片
+        window.addEventListener('DOMContentLoaded', loadImages);
+
+        // 监听存储变化，如果验证状态改变，重新加载
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'star_verified') {
+                loadImages();
+            }
+        });
+    </script>
+</body>
+</html>

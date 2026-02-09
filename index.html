@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能机器人技术 - 期中考试例题</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .star-check {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .star-check h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .star-check p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .github-btn {
+            display: inline-block;
+            background: #24292e;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .github-btn:hover {
+            background: #2f363d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .check-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .check-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .images-container {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .images-container.active {
+            display: grid;
+        }
+
+        .image-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .image-item:hover {
+            transform: scale(1.05);
+        }
+
+        .image-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-item .caption {
+            padding: 15px;
+            text-align: center;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .message {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .star-icon {
+            color: #ffc107;
+            font-size: 2em;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⭐ 智能机器人技术</h1>
+            <p>期中考试例题分享</p>
+        </div>
+        
+        <div class="content">
+            <div class="star-check">
+                <h2>🔒 访问限制</h2>
+                <p>为了支持项目，请先给仓库点个 Star ⭐</p>
+                <p>只有 Star 了仓库的用户才能查看图片内容</p>
+                
+                <div id="message-container"></div>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 10px;">正在验证...</p>
+                </div>
+                
+                <a href="https://github.com/changyicheng1234/intelligent-robotics-course-materials" 
+                   target="_blank" 
+                   class="github-btn">
+                    🔗 前往 GitHub 仓库
+                </a>
+                
+                <a href="verify.html" class="github-btn" style="background: #28a745;">
+                    🔐 使用 Token 验证（推荐）
+                </a>
+                
+                <button class="check-btn" onclick="checkStarStatus()">
+                    ✅ 我已 Star，快速验证
+                </button>
+            </div>
+
+            <div class="images-container" id="images-container">
+                <div class="image-item">
+                    <img src="屏幕截图 2026-02-09 173334.png" alt="例题1" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3E图片加载失败%3C/text%3E%3C/svg%3E'">
+                    <div class="caption">例题 1</div>
+                </div>
+                <div class="image-item">
+                    <img src="屏幕截图 2026-02-09 173952.png" alt="例题2" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3E图片加载失败%3C/text%3E%3C/svg%3E'">
+                    <div class="caption">例题 2</div>
+                </div>
+                <div class="image-item">
+                    <img src="屏幕截图 2026-02-09 174041.png" alt="例题3" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3E图片加载失败%3C/text%3E%3C/svg%3E'">
+                    <div class="caption">例题 3</div>
+                </div>
+                <div class="image-item">
+                    <img src="屏幕截图 2026-02-09 174109.png" alt="例题4" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3E图片加载失败%3C/text%3E%3C/svg%3E'">
+                    <div class="caption">例题 4</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const REPO_OWNER = 'changyicheng1234';
+        const REPO_NAME = 'intelligent-robotics-course-materials';
+        const REPO_FULL_NAME = `${REPO_OWNER}/${REPO_NAME}`;
+
+        function showMessage(text, type) {
+            const container = document.getElementById('message-container');
+            container.innerHTML = `<div class="message ${type}">${text}</div>`;
+        }
+
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            if (show) {
+                loading.classList.add('active');
+            } else {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function checkStarStatus() {
+            showLoading(true);
+            showMessage('', '');
+
+            try {
+                // 方法1: 使用 GitHub API 检查（需要用户授权）
+                // 由于浏览器安全限制，我们需要使用 GitHub OAuth 或让用户手动输入 token
+                // 这里提供一个简化版本，检查仓库的 star 数量变化
+
+                // 检查 localStorage 中是否有已验证的记录
+                const verified = localStorage.getItem('star_verified');
+                const verifiedTime = localStorage.getItem('star_verified_time');
+                const now = Date.now();
+                
+                // 如果24小时内已验证过，直接显示
+                if (verified === 'true' && verifiedTime && (now - parseInt(verifiedTime)) < 24 * 60 * 60 * 1000) {
+                    showImages();
+                    showMessage('✅ 验证成功！欢迎查看内容', 'success');
+                    showLoading(false);
+                    return;
+                }
+
+                // 获取仓库信息（公开 API，不需要认证）
+                const repoResponse = await fetch(`https://api.github.com/repos/${REPO_FULL_NAME}`);
+                const repoData = await repoResponse.json();
+
+                if (repoResponse.ok) {
+                    // 提示用户需要 Star
+                    showMessage(
+                        `📊 当前 Star 数: ${repoData.stargazers_count}<br>` +
+                        `⚠️ 请先前往 GitHub 给仓库点 Star，然后刷新页面并再次点击验证按钮。<br>` +
+                        `💡 提示：如果已 Star，请等待几秒后重试，或清除浏览器缓存后重试。`,
+                        'info'
+                    );
+                    
+                    // 为了演示，这里提供一个简单的验证方式
+                    // 实际应用中，应该使用 GitHub OAuth 进行完整验证
+                    setTimeout(() => {
+                        const userConfirmed = confirm(
+                            '请确认：\n\n' +
+                            '1. 您已经访问了 GitHub 仓库页面\n' +
+                            '2. 您已经给仓库点了 Star ⭐\n\n' +
+                            '如果确认，请点击"确定"继续'
+                        );
+                        
+                        if (userConfirmed) {
+                            // 标记为已验证（24小时有效）
+                            localStorage.setItem('star_verified', 'true');
+                            localStorage.setItem('star_verified_time', now.toString());
+                            showImages();
+                            showMessage('✅ 验证成功！感谢您的支持！', 'success');
+                        } else {
+                            showMessage('❌ 请先给仓库点 Star 后再试', 'error');
+                        }
+                        showLoading(false);
+                    }, 1000);
+                } else {
+                    throw new Error('无法获取仓库信息');
+                }
+            } catch (error) {
+                console.error('验证失败:', error);
+                showMessage('❌ 验证失败，请检查网络连接或稍后重试', 'error');
+                showLoading(false);
+            }
+        }
+
+        function showImages() {
+            // 跳转到受保护的图片页面
+            window.location.href = 'protected-images.html';
+        }
+
+        // 页面加载时检查是否已验证
+        window.addEventListener('DOMContentLoaded', () => {
+            const verified = localStorage.getItem('star_verified');
+            const verifiedTime = localStorage.getItem('star_verified_time');
+            const now = Date.now();
+            
+            if (verified === 'true' && verifiedTime && (now - parseInt(verifiedTime)) < 24 * 60 * 60 * 1000) {
+                showImages();
+                showMessage('✅ 欢迎回来！', 'success');
+            }
+        });
+    </script>
+</body>
+</html>

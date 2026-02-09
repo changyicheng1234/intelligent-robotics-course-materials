@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Star 验证</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info-box ol {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .info-box li {
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 GitHub Star 验证</h1>
+        
+        <div class="info-box">
+            <h3>📝 如何获取 GitHub Token：</h3>
+            <ol>
+                <li>访问 <a href="https://github.com/settings/tokens" target="_blank">GitHub Token 设置页面</a></li>
+                <li>点击 "Generate new token" → "Generate new token (classic)"</li>
+                <li>填写名称（如：验证 Star 状态）</li>
+                <li>选择过期时间</li>
+                <li>勾选权限：<strong>public_repo</strong></li>
+                <li>点击 "Generate token"</li>
+                <li>复制生成的 token（只显示一次，请妥善保存）</li>
+            </ol>
+        </div>
+
+        <form id="verify-form">
+            <div class="form-group">
+                <label for="token">GitHub Personal Access Token：</label>
+                <input type="text" id="token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required>
+            </div>
+            <button type="submit" class="btn">✅ 验证 Star 状态</button>
+        </form>
+
+        <div id="message"></div>
+        <a href="index.html" class="back-link">← 返回主页</a>
+    </div>
+
+    <script>
+        const REPO_OWNER = 'changyicheng1234';
+        const REPO_NAME = 'intelligent-robotics-course-materials';
+        const REPO_FULL_NAME = `${REPO_OWNER}/${REPO_NAME}`;
+
+        document.getElementById('verify-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = document.getElementById('token').value.trim();
+            const messageDiv = document.getElementById('message');
+            
+            if (!token) {
+                messageDiv.innerHTML = '<div class="message error">请输入 GitHub Token</div>';
+                return;
+            }
+
+            messageDiv.innerHTML = '<div class="message info">正在验证...</div>';
+
+            try {
+                // 检查用户是否 star 了仓库
+                const response = await fetch(`https://api.github.com/user/starred/${REPO_FULL_NAME}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (response.status === 204) {
+                    // 204 表示已 star
+                    localStorage.setItem('star_verified', 'true');
+                    localStorage.setItem('star_verified_time', Date.now().toString());
+                    messageDiv.innerHTML = '<div class="message success">✅ 验证成功！您已 Star 该仓库。正在跳转...</div>';
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else if (response.status === 404) {
+                    // 404 表示未 star
+                    messageDiv.innerHTML = '<div class="message error">❌ 您尚未 Star 该仓库。请先前往 <a href="https://github.com/' + REPO_FULL_NAME + '" target="_blank">GitHub 仓库</a> 点 Star，然后重试。</div>';
+                } else {
+                    throw new Error('验证失败');
+                }
+            } catch (error) {
+                console.error('验证错误:', error);
+                messageDiv.innerHTML = '<div class="message error">❌ 验证失败，请检查 Token 是否正确，或稍后重试。</div>';
+            }
+        });
+    </script>
+</body>
+</html>
